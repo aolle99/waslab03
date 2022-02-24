@@ -85,8 +85,11 @@ public class WallServlet extends HttpServlet {
 	// Implements DELETE http://localhost:8080/waslab03/tweets/:id
 	public void doDelete(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException, ServletException {
-
-		throw new ServletException("DELETE not yet implemented");
+		String uri = req.getRequestURI();
+		String[] uri_splited = uri.split("/");
+		long id = Long.valueOf(uri_splited[uri_splited.length-1]);
+		System.out.println(id);
+		Database.deleteTweet(id);
 	}
 
 }
