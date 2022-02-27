@@ -75,7 +75,7 @@ function getTweets() {
 			/*
 			 * TASK #2 -->
 			 */
-			let tweets = JSON.parse(tweet_list)
+			var tweets = JSON.parse(tweet_list)
 			for(i=0; i<tweets.length; ++i) {
 				document.getElementById("tweet_list").innerHTML += getTweetHTML(tweets[i],"like");
 			}
@@ -96,7 +96,9 @@ function tweetHandler() {
 	req.onload = function() { 
 		if (req.status == 200) { // 200 OK
 			let nt = JSON.parse(req.responseText);
-			document.getElementById("tweet_list").innerHTML =getTweetHTML(nt,"delete") + document.getElementById("tweet_list").innerHTML;
+			localStorage.setItem("ID_tweet", nt["id"]);
+			localStorage.setItem("TOKEN_tweet", nt["token"]);
+			document.getElementById("tweet_list").innerHTML = getTweetHTML(nt,"delete") + document.getElementById("tweet_list").innerHTML;
 		}
 	};
 	req.setRequestHeader("Content-Type","application/json");
