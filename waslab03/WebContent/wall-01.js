@@ -77,7 +77,9 @@ function getTweets() {
 			 */
 			var tweets = JSON.parse(tweet_list)
 			for(i=0; i<tweets.length; ++i) {
-				document.getElementById("tweet_list").innerHTML += getTweetHTML(tweets[i],"like");
+				console.log(localStorage.getItem(tweets[i].id));
+				if(localStorage.getItem(tweets[i].id) != null) document.getElementById("tweet_list").innerHTML += getTweetHTML(tweets[i],"delete");
+				else document.getElementById("tweet_list").innerHTML += getTweetHTML(tweets[i],"like");
 			}
 		}
 	};
@@ -96,8 +98,7 @@ function tweetHandler() {
 	req.onload = function() { 
 		if (req.status == 200) { // 200 OK
 			let nt = JSON.parse(req.responseText);
-			localStorage.setItem("ID_tweet", nt["id"]);
-			localStorage.setItem("TOKEN_tweet", nt["token"]);
+			localStorage.setItem(nt["id"] , nt["token"]);
 			document.getElementById("tweet_list").innerHTML = getTweetHTML(nt,"delete") + document.getElementById("tweet_list").innerHTML;
 		}
 	};
