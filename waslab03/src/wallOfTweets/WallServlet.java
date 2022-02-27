@@ -118,7 +118,14 @@ public class WallServlet extends HttpServlet {
 		String uri = req.getRequestURI();
 		String[] uri_splited = uri.split("/");
 		long id = Long.valueOf(uri_splited[uri_splited.length-1]);
-		Database.deleteTweet(id);
+		
+		//compare token with id_encoded
+		String token = req.getHeader("Authorization");
+		byte[] shaInBytes  = digest(String.valueOf(id).getBytes(StandardCharsets.UTF_8), "SHA-256");
+		String id_encoded = bytesToHex(shaInBytes);
+		if(token != null) {
+			if(token.equals(id_encoded)) Database.deleteTweet(id);
+		}
 	}
 
 }

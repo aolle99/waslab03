@@ -50,10 +50,12 @@ function deleteHandler(tweetID) {
 	 */
 	req = new XMLHttpRequest();
 	req.open('DELETE', tweetsURI + "/" + tweetID, /*async*/true);
+	req.setRequestHeader("Authorization", localStorage.getItem(tweetID));
 	req.onload = function() { 
 		if (req.status == 200) { // 200 OK
 			let to_delete = document.getElementById("tweet_" + tweetID);
 			to_delete.remove();
+			localStorage.removeItem(tweetID);
 		}
 	};
 	req.send(/*no params*/null);
@@ -77,7 +79,6 @@ function getTweets() {
 			 */
 			var tweets = JSON.parse(tweet_list)
 			for(i=0; i<tweets.length; ++i) {
-				console.log(localStorage.getItem(tweets[i].id));
 				if(localStorage.getItem(tweets[i].id) != null) document.getElementById("tweet_list").innerHTML += getTweetHTML(tweets[i],"delete");
 				else document.getElementById("tweet_list").innerHTML += getTweetHTML(tweets[i],"like");
 			}
