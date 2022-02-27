@@ -1,6 +1,9 @@
 package wallOfTweets;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -38,6 +41,25 @@ public class WallServlet extends HttpServlet {
 		}
 		resp.getWriter().println(job.toString());
 	}
+	
+	private static byte[] digest(byte[] input, String algorithm) {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance(algorithm);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalArgumentException(e);
+        }
+        byte[] result = md.digest(input);
+        return result;
+    }
+
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
 
 	@Override
 	// Implements POST http://localhost:8080/waslab03/tweets/:id/likes
@@ -69,7 +91,15 @@ public class WallServlet extends HttpServlet {
 				String author = obj.getString("Author");
 				String text = obj.getString("Text");
 				Tweet t = Database.insertTweet(author, text);
+				String token = String.valueOf(t.getId());
+				
+				//encrypt token
+				byte[] shaInBytes  = digest(token.getBytes(StandardCharsets.UTF_8), "SHA-256");
+				String token_encoded = bytesToHex(shaInBytes);
+				
+				//add new attribute token
 				obj2 = new JSONObject(t);
+				obj2.put("token", token_encoded);
 				resp.getWriter().println(obj2.toString());
 				
 			} catch (JSONException e) {
@@ -88,7 +118,6 @@ public class WallServlet extends HttpServlet {
 		String uri = req.getRequestURI();
 		String[] uri_splited = uri.split("/");
 		long id = Long.valueOf(uri_splited[uri_splited.length-1]);
-		System.out.println(id);
 		Database.deleteTweet(id);
 	}
 
